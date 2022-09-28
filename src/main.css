@@ -1,0 +1,22 @@
+.my-column {
+  width: calc(100vw - 24px);
+  max-width: 900px;
+  margin: auto;
+}
+
+.vertical-steps {
+  width: auto;
+  margin: 0 16px 16px 0;
+}
+
+.input-ip {
+  width: 150px;
+}
+
+.input-port {
+  width: 90px;
+}
+
+.input-slash {
+  width: 60px
+}
