@@ -30,3 +30,4 @@ public/crypto.js
 
 # worker
 public/worker.js
+.vercel
