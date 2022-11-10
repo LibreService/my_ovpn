@@ -199,7 +199,6 @@ function confCallback () {
   }
   set('keepalive 10 120')
   set(`tls-auth ${FileName.taKey} 0`)
-  set('cipher AES-256-CBC')
   set('persist-key')
   set('persist-tun')
   set('status /var/log/openvpn/openvpn-status.log')

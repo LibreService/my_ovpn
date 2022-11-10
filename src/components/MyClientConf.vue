@@ -50,7 +50,6 @@ function confCallback () {
   set(`cert ${FileName.clientCrt}`)
   set(`key ${FileName.clientKey}`)
   set(`tls-auth ${FileName.taKey} 1`)
-  set('cipher AES-256-CBC')
   set('verb 3')
   updateClientConf(conf.join('\n'))
   return Promise.resolve()
