@@ -4,6 +4,7 @@ import { MyHeader, MyLayout } from '@libreservice/my-widget'
 import { jump } from './router'
 import MyFileList from './components/MyFileList.vue'
 import MyFooter from './components/MyFooter.vue'
+import MyPwa from './components/MyPwa.vue'
 import { isMobile } from './util'
 import { homepage } from '../package.json'
 import './main.css'
@@ -12,6 +13,7 @@ const osThemeRef = useOsTheme()
 </script>
 
 <template>
+  <my-pwa />
   <n-config-provider :theme="osThemeRef === 'dark' ? darkTheme : null">
     <n-message-provider>
       <n-notification-provider :placement="isMobile ? 'top' : 'top-right'">
