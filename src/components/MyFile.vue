@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Component, computed, watch } from 'vue'
-import { NTag, NIcon, NTooltip } from 'naive-ui'
+import { Component, ref, computed, watch } from 'vue'
+import { NTag, NIcon, NTooltip, NCode } from 'naive-ui'
 import { Certificate20Filled, KeyMultiple20Regular, Key20Regular, Settings20Filled } from '@vicons/fluent'
 import { ExchangeAlt } from '@vicons/fa'
 import { printKey, printCrt, printTaKey, printDh, abortDh } from '../workerAPI'
@@ -29,6 +29,8 @@ const type = computed(() => {
   return 'conf' // server.conf, client.ovpn
 })
 
+const text = ref<string | undefined>()
+
 const icon = computed<Component>(() => ({
   crt: Certificate20Filled,
   dh: ExchangeAlt,
@@ -38,7 +40,7 @@ const icon = computed<Component>(() => ({
 })[type.value])
 
 const tagType = computed(() => {
-  if (props.ptr) {
+  if (text.value) {
     return props.clicked ? 'success' : 'info'
   }
   if (type.value === 'dh' && generatingDH.value) {
@@ -47,42 +49,46 @@ const tagType = computed(() => {
   return 'default'
 })
 
+const disabled = computed(() => tagType.value === 'default')
+
 async function download () {
-  if (!props.ptr) {
+  if (!text.value) {
     return
   }
-  let text: string
-  props.setClicked(true)
-  switch (type.value) {
-    case 'conf':
-      text = props.ptr as string
-      break
-    case 'rsa':
-      text = await printKey(props.ptr as number)
-      break
-    case 'crt':
-      text = await printCrt(props.ptr as number)
-      break
-    case 'dh':
-      text = await printDh(props.ptr as number)
-      break
-    case 'ta':
-      text = await printTaKey(props.ptr as number)
-  }
-  if (process.env.NODE_ENV === 'production') {
-    const a = document.createElement('a')
-    a.href = `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`
-    a.download = props.name
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-  } else {
-    console.log(text)
-  }
+  const url = URL.createObjectURL(new Blob([text.value], { type: 'application/octet-stream' }))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = props.name
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
 }
 
 // file regenerated, reset color
-watch(() => props.ptr, () => { props.setClicked(false) })
+watch(() => props.ptr, async ptr => {
+  props.setClicked(false)
+  if (!ptr) {
+    text.value = undefined
+    return
+  }
+  switch (type.value) {
+    case 'conf':
+      text.value = props.ptr as string
+      break
+    case 'rsa':
+      text.value = await printKey(props.ptr as number)
+      break
+    case 'crt':
+      text.value = await printCrt(props.ptr as number)
+      break
+    case 'dh':
+      text.value = await printDh(props.ptr as number)
+      break
+    case 'ta':
+      text.value = await printTaKey(props.ptr as number)
+  }
+})
 
 function abort () {
   abortDh()
@@ -91,14 +97,14 @@ function abort () {
 
 <template>
   <n-tooltip
-    :disabled="tagType !== 'warning'"
+    :disabled="disabled"
     placement="top-end"
   >
     <template #trigger>
       <n-tag
         :bordered="false"
         :style="{ cursor: tagType === 'warning' ? 'auto' : 'pointer' }"
-        :disabled="tagType === 'default'"
+        :disabled="disabled"
         :closable="tagType === 'warning'"
         :type="tagType"
         @click="download"
@@ -110,6 +116,12 @@ function abort () {
         {{ name }}
       </n-tag>
     </template>
-    Click close to abort generation.
+    <template v-if="tagType === 'warning'">
+      Click close to abort generation.
+    </template>
+    <n-code
+      v-else
+      :code="text"
+    />
   </n-tooltip>
 </template>
