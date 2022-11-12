@@ -32,6 +32,7 @@ async function updateCA (CN: string, days: number) {
   if (caKey.value) {
     await freeKey(caKey.value)
     await freeCrt(caCrt.value)
+    caKey.value = caCrt.value = 0
   }
   caKey.value = await genKey()
   caCrt.value = await genCaCrt(caKey.value, CN, days)
@@ -47,6 +48,7 @@ const generatingDH = ref<boolean>(false)
 async function updateDH () {
   if (dh.value) {
     await freeDh(dh.value)
+    dh.value = 0
   }
   const generating = notification.info({
     title: 'Please wait ...',
@@ -76,6 +78,7 @@ async function updateDH () {
 async function updateTA () {
   if (taKey.value) {
     await freeTaKey(taKey.value)
+    taKey.value = 0
   }
   taKey.value = await genTaKey()
 }
@@ -85,6 +88,7 @@ async function updateServer (CN: string, days: number) {
   if (serverKey.value) {
     await freeKey(serverKey.value)
     await freeCrt(serverCrt.value)
+    serverKey.value = serverCrt.value = 0
   }
   serverKey.value = await genKey()
   serverCrt.value = await genCrt(caKey.value, caCrt.value, serverKey.value, CN, days)
@@ -96,6 +100,7 @@ async function updateClient (CN: string, days: number) {
   if (clientKey.value) {
     await freeKey(clientKey.value)
     await freeCrt(clientCrt.value)
+    clientKey.value = clientCrt.value = 0
   }
   clientKey.value = await genKey()
   clientCrt.value = await genCrt(caKey.value, caCrt.value, clientKey.value, CN, days)

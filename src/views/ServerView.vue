@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import { NCard, NSpace, NSteps, NStep, NButton } from 'naive-ui'
 import { isPortrait } from '../util'
-import { caKey, updateDH, updateTA } from '../manager'
+import { caKey, updateDH, generatingDH, updateTA } from '../manager'
 import MyServerConf from '../components/MyServerConf.vue'
 import MyDh from '../components/MyDh.vue'
 import MyTa from '../components/MyTa.vue'
@@ -32,6 +32,7 @@ function registerCert (callback: Callback) {
   certCallback = callback
 }
 
+const blockedByDH = computed(() => current.value === Step.DH && generatingDH.value)
 const blockedByCA = computed(() => current.value === Step.Cert && !caKey.value)
 const actionDisabled = ref<boolean>(false)
 
@@ -58,6 +59,13 @@ async function generate () {
 function skip () {
   ++current.value
 }
+
+function updateCurrent (future: number) {
+  if (actionDisabled.value || future === Step.Finish || future === current.value) {
+    return
+  }
+  current.value = future
+}
 </script>
 
 <template>
@@ -67,6 +75,7 @@ function skip () {
         vertical
         :current="current"
         class="vertical-steps"
+        @update:current="updateCurrent"
       >
         <n-step title="Diffie-Hellman key" />
         <n-step title="Server certificate" />
@@ -104,7 +113,7 @@ function skip () {
         <n-button
           secondary
           type="success"
-          :disabled="blockedByCA || actionDisabled"
+          :disabled="blockedByDH || blockedByCA || actionDisabled"
           @click="generate"
         >
           Generate
