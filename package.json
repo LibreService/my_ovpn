@@ -8,6 +8,7 @@
     "url": "https://github.com/eagleoflqj"
   },
   "scripts": {
+    "native": "bash scripts/test_native.sh",
     "lib": "bash scripts/build_lib.sh",
     "wasm": "bash scripts/build_wasm.sh",
     "worker": "rollup -c rollup.worker-config.mjs",

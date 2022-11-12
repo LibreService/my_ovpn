@@ -38,5 +38,5 @@ void init();
 
 void free_key(EVP_PKEY *pkey);
 void free_crt(X509 *crt);
-void free_ta_key(char *str);
+void free_ta_key(unsigned char *str);
 #endif

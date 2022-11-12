@@ -8,6 +8,6 @@ void free_crt(X509 *crt) {
     X509_free(crt);
 }
 
-void free_ta_key(char *str) {
+void free_ta_key(unsigned char *str) {
     free(str);
 }

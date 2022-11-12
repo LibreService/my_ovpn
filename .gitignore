@@ -27,6 +27,7 @@ pnpm-lock.yaml
 # wasm
 *.wasm
 public/crypto.js
+test_all
 
 # worker
 public/worker.js

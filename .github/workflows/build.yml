@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-22.04, macos-latest]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -33,6 +33,7 @@ jobs:
       - name: Build wasm
         run: |
           . emsdk/emsdk_env.sh
+          pnpm run native
           pnpm run lib
           pnpm run wasm
       - name: Build
