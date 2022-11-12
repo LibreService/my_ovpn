@@ -49,6 +49,13 @@ async function generate () {
 function skip () {
   ++current.value
 }
+
+function updateCurrent (future: number) {
+  if (actionDisabled.value || future === Step.Finish) {
+    return
+  }
+  current.value = future
+}
 </script>
 
 <template>
@@ -58,6 +65,7 @@ function skip () {
         vertical
         :current="current"
         class="vertical-steps"
+        @update:current="updateCurrent"
       >
         <n-step title="Client certificate" />
         <n-step title="Client configuration" />
