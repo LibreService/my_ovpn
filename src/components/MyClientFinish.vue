@@ -17,7 +17,7 @@ import { FileName } from '../convention'
     </n-text>,
     <n-text code>
       {{ FileName.clientCrt }}
-    </n-text>,
+    </n-text>
     and
     <n-text code>
       {{ FileName.clientConf }}

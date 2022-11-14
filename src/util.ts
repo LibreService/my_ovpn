@@ -72,4 +72,15 @@ function isInPool (IP: string, start: string, end: string) {
   return ip2num(start) <= num && num <= ip2num(end)
 }
 
-export { resetToast, isValidIP, getPrivateIPSlash, slash2mask, getPoolStart, getPoolEnd, isInPool, isPortrait, isMobile }
+function downloadBlob (blob: Blob, name: string) {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = name
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+export { resetToast, isValidIP, getPrivateIPSlash, slash2mask, getPoolStart, getPoolEnd, isInPool, downloadBlob, isPortrait, isMobile }

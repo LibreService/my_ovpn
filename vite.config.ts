@@ -46,5 +46,13 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export default defineConfig({
+  build: {
+    target: 'es2020'
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'es2020'
+    }
+  },
   plugins
 })

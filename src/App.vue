@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NConfigProvider, NMessageProvider, NNotificationProvider, NLoadingBarProvider, NH1, darkTheme, useOsTheme } from 'naive-ui'
+import { NConfigProvider, NMessageProvider, NNotificationProvider, NLoadingBarProvider, NDialogProvider, NH1, darkTheme, useOsTheme } from 'naive-ui'
 import { MyHeader, MyLayout } from '@libreservice/my-widget'
 import { jump } from './router'
 import MyFileList from './components/MyFileList.vue'
@@ -18,31 +18,33 @@ const osThemeRef = useOsTheme()
     <n-message-provider>
       <n-notification-provider :placement="isMobile ? 'top' : 'top-right'">
         <n-loading-bar-provider>
-          <my-layout>
-            <template #header>
-              <my-header
-                icon="/LibreService.svg"
-                :homepage="homepage"
-              />
-            </template>
-            <template #content>
-              <div
-                style="cursor: pointer; text-align: center; margin-top: 16px"
-                @click="jump('Main')"
-              >
-                <n-h1>My OVPN</n-h1>
-              </div>
-              <router-view v-slot="{ Component }">
-                <keep-alive>
-                  <component :is="Component" />
-                </keep-alive>
-              </router-view>
-              <my-file-list style="margin-top: 16px" />
-            </template>
-            <template #footer>
-              <my-footer />
-            </template>
-          </my-layout>
+          <n-dialog-provider>
+            <my-layout>
+              <template #header>
+                <my-header
+                  icon="/LibreService.svg"
+                  :homepage="homepage"
+                />
+              </template>
+              <template #content>
+                <div
+                  style="cursor: pointer; text-align: center; margin-top: 16px"
+                  @click="jump('Main')"
+                >
+                  <n-h1>My OVPN</n-h1>
+                </div>
+                <router-view v-slot="{ Component }">
+                  <keep-alive>
+                    <component :is="Component" />
+                  </keep-alive>
+                </router-view>
+                <my-file-list style="margin-top: 16px" />
+              </template>
+              <template #footer>
+                <my-footer />
+              </template>
+            </my-layout>
+          </n-dialog-provider>
         </n-loading-bar-provider>
       </n-notification-provider>
     </n-message-provider>

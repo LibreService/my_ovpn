@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { Component, ref, computed, watch } from 'vue'
+import { Component, computed, watch } from 'vue'
 import { NTag, NIcon, NTooltip, NCode } from 'naive-ui'
 import { Certificate20Filled, KeyMultiple20Regular, Key20Regular, Settings20Filled } from '@vicons/fluent'
 import { ExchangeAlt } from '@vicons/fa'
 import { printKey, printCrt, printTaKey, printDh, abortDh } from '../workerAPI'
 import { generatingDH } from '../manager'
+import { downloadBlob } from '../util'
 
 const props = defineProps<{
   name: string
   ptr: number | string // C struct pointer or JS content string
   clicked: boolean
   setClicked:(value: boolean) => void
+  text: string
+  setText: (value: string) => void
 }>()
 
 const type = computed(() => {
@@ -29,8 +32,6 @@ const type = computed(() => {
   return 'conf' // server.conf, client.ovpn
 })
 
-const text = ref<string | undefined>()
-
 const icon = computed<Component>(() => ({
   crt: Certificate20Filled,
   dh: ExchangeAlt,
@@ -40,7 +41,7 @@ const icon = computed<Component>(() => ({
 })[type.value])
 
 const tagType = computed(() => {
-  if (text.value) {
+  if (props.text) {
     return props.clicked ? 'success' : 'info'
   }
   if (type.value === 'dh' && generatingDH.value) {
@@ -52,42 +53,36 @@ const tagType = computed(() => {
 const disabled = computed(() => tagType.value === 'default')
 
 async function download () {
-  if (!text.value) {
+  if (!props.text) {
     return
   }
-  const url = URL.createObjectURL(new Blob([text.value], { type: 'application/octet-stream' }))
-  const a = document.createElement('a')
-  a.href = url
-  a.download = props.name
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  downloadBlob(new Blob([props.text], { type: 'application/octet-stream' }), props.name)
+  props.setClicked(true)
 }
 
 // file regenerated, reset color
 watch(() => props.ptr, async ptr => {
   props.setClicked(false)
-  if (!ptr) {
-    text.value = undefined
-    return
+  let text = ''
+  if (ptr) {
+    switch (type.value) {
+      case 'conf':
+        text = props.ptr as string
+        break
+      case 'rsa':
+        text = await printKey(props.ptr as number)
+        break
+      case 'crt':
+        text = await printCrt(props.ptr as number)
+        break
+      case 'dh':
+        text = await printDh(props.ptr as number)
+        break
+      case 'ta':
+        text = await printTaKey(props.ptr as number)
+    }
   }
-  switch (type.value) {
-    case 'conf':
-      text.value = props.ptr as string
-      break
-    case 'rsa':
-      text.value = await printKey(props.ptr as number)
-      break
-    case 'crt':
-      text.value = await printCrt(props.ptr as number)
-      break
-    case 'dh':
-      text.value = await printDh(props.ptr as number)
-      break
-    case 'ta':
-      text.value = await printTaKey(props.ptr as number)
-  }
+  props.setText(text)
 })
 
 function abort () {
