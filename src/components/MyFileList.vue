@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { h, ref, computed, VNode } from 'vue'
-import { NCard, NSpace, NButton, NText, useLoadingBar, useNotification, useDialog } from 'naive-ui'
+import { NCard, NSpace, NButton, NText, NUpload, NUploadDragger, useLoadingBar, useNotification, useDialog, useMessage, UploadFileInfo } from 'naive-ui'
 import { downloadZip } from 'client-zip'
 import MyFile from './MyFile.vue'
 import { register, caKey, caCrt, serverKey, serverCrt, serverConf, dh, taKey, clientKey, clientCrt, clientConf } from '../manager'
@@ -10,6 +10,7 @@ import { downloadBlob } from '../util'
 const loadingBar = useLoadingBar()
 const notification = useNotification()
 const dialog = useDialog()
+const message = useMessage()
 
 register(loadingBar, notification)
 
@@ -79,6 +80,59 @@ function zipFiles (type: 'server' | 'client') {
     download()
   }
 }
+
+const embedDisabled = computed(() => !caCrt.value || !clientKey.value || !clientCrt.value || !clientConf.value)
+
+function embed (taKeyText: string) {
+  const conf = getText('clientConf')
+  const embedded = conf.replace(`ca ${FileName.caCrt}`, `<ca>\n${getText('caCrt')}</ca>`)
+    .replace(`cert ${FileName.clientCrt}`, `<cert>\n${getText('clientCrt')}</cert>`)
+    .replace(`key ${FileName.clientKey}`, `<key>\n${getText('clientKey')}</key>`)
+    .replace(`tls-auth ${FileName.taKey} 1`, `key-direction 1\n<tls-auth>\n${taKeyText}</tls-auth>`)
+  downloadBlob(new Blob([embedded], { type: 'application/octet-stream' }), FileName.clientConf)
+}
+
+async function matchTaKey (file: UploadFileInfo) {
+  const text = await file.file!.text()
+  if (!text.match(/^-----BEGIN OpenVPN Static key V1-----\n([0-9a-f]{32}\n){16}-----END OpenVPN Static key V1-----\n?$/)) {
+    return null
+  }
+  return text[text.length - 1] === '\n' ? text : `${text}\n`
+}
+
+function embedClientFiles () {
+  if (taKey.value) {
+    embed(getText('taKey'))
+  } else {
+    const dialogReactive = dialog.info({
+      title: `${FileName.taKey} is missing`,
+      content: () => h(NUpload, {
+        defaultUpload: false,
+        fileList: [],
+        onUpdateFileList: async fileList => {
+          const file = fileList[0]
+          if (file.name !== FileName.taKey) {
+            message.error(`File name must be ${FileName.taKey}`)
+            return
+          }
+          const text = await matchTaKey(file)
+          if (!text) {
+            message.error(`${FileName.taKey} is in wrong format.`)
+            return
+          }
+          embed(text)
+          dialogReactive.destroy()
+        }
+      }, () => [h(NUploadDragger, () => [
+        'Upload ',
+        h(NText, {
+          code: true
+        }, () => [FileName.taKey]),
+        ' by clicking or dragging.'
+      ])])
+    })
+  }
+}
 </script>
 
 <template>
@@ -115,6 +169,14 @@ function zipFiles (type: 'server' | 'client') {
           @click="zipFiles('client')"
         >
           Zip client files
+        </n-button>
+        <n-button
+          secondary
+          type="success"
+          :disabled="embedDisabled"
+          @click="embedClientFiles"
+        >
+          Embed client files
         </n-button>
       </n-space>
     </template>

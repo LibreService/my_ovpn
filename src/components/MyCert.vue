@@ -60,18 +60,18 @@ async function checkFiles (uploadedFiles: UploadFileInfo[]) {
   for (const file of uploadedFiles) {
     if (file.name === FileName.caKey) {
       if (keyFile) {
-        message.error('Need one ca.key.')
+        message.error(`Need one ${FileName.caKey}.`)
         return
       }
       keyFile = file
     } else if (file.name === FileName.caCrt) {
       if (crtFile) {
-        message.error('Need one ca.crt.')
+        message.error(`Need one ${FileName.caCrt}.`)
         return
       }
       crtFile = file
     } else {
-      message.error('File name must be ca.key or ca.crt.')
+      message.error(`File name must be ${FileName.caKey} or ${FileName.caCrt}.`)
       return
     }
   }
@@ -79,7 +79,7 @@ async function checkFiles (uploadedFiles: UploadFileInfo[]) {
     const u8Array = new Uint8Array(await keyFile.file!.arrayBuffer())
     newCaKey = await parseKey(u8Array, u8Array.length)
     if (!newCaKey) {
-      message.error('ca.key is in wrong format.')
+      message.error(`${FileName.caKey} is in wrong format.`)
       return
     }
     const bits = await getKeyBits(newCaKey)
@@ -90,7 +90,7 @@ async function checkFiles (uploadedFiles: UploadFileInfo[]) {
     }
     const valid = await isKeyValid(newCaKey)
     if (!valid) {
-      message.error('ca.key is invalid.')
+      message.error(`${FileName.caKey} is invalid.`)
       clean()
       return
     }
@@ -99,7 +99,7 @@ async function checkFiles (uploadedFiles: UploadFileInfo[]) {
     const u8Array = new Uint8Array(await crtFile.file!.arrayBuffer())
     newCaCrt = await parseCrt(u8Array, u8Array.length)
     if (!newCaCrt) {
-      message.error('ca.crt is in wrong format.')
+      message.error(`${FileName.caCrt} is in wrong format.`)
       clean()
       return
     }
@@ -113,7 +113,7 @@ async function checkFiles (uploadedFiles: UploadFileInfo[]) {
   if (keyFile && crtFile) {
     const valid = await isCrtValid(newCaCrt, newCaKey)
     if (!valid) {
-      message.error('ca.key and ca.crt mismatch.')
+      message.error(`${FileName.caKey} and ${FileName.caCrt} mismatch.`)
       clean()
       return
     }
