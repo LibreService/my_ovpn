@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { NConfigProvider, NMessageProvider, NNotificationProvider, NLoadingBarProvider, NDialogProvider, NH1, darkTheme, useOsTheme } from 'naive-ui'
-import { MyHeader, MyLayout } from '@libreservice/my-widget'
+import { MyHeader, MyLayout, MyFooter } from '@libreservice/my-widget'
 import { jump } from './router'
 import MyFileList from './components/MyFileList.vue'
-import MyFooter from './components/MyFooter.vue'
 import MyPwa from './components/MyPwa.vue'
 import { isMobile } from './util'
 import { homepage } from '../package.json'
@@ -41,7 +40,13 @@ const osThemeRef = useOsTheme()
                 <my-file-list style="margin-top: 16px" />
               </template>
               <template #footer>
-                <my-footer />
+                <my-footer
+                  class="my-column"
+                  :homepage="homepage"
+                  commit="__COMMIT__"
+                  build-date="__BUILD_DATE__"
+                  copyright="2022 Qijia Liu"
+                />
               </template>
             </my-layout>
           </n-dialog-provider>
