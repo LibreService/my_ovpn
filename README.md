@@ -57,6 +57,10 @@ pnpm run check
 ```sh
 pnpm run build
 ```
+### Test
+```sh
+pnpm run test
+```
 ### Preview
 ```sh
 pnpm run preview
