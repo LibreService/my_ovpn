@@ -3,7 +3,30 @@ import { defineConfig } from 'vite'
 import { run } from 'vite-plugin-run'
 import vue from '@vitejs/plugin-vue'
 import replace from '@rollup/plugin-replace'
-import { VitePWA } from 'vite-plugin-pwa'
+import { VitePWA, VitePWAOptions } from 'vite-plugin-pwa'
+
+const resources = ['crypto.js', 'crypto.wasm']
+
+const workbox: VitePWAOptions["workbox"] = {
+  globPatterns: [
+    '**/*.{js,css,html}',
+    'apple-touch-icon.png',
+    ...resources
+  ]
+}
+
+if (process.env.LIBRESERVICE_CDN) {
+  workbox.manifestTransforms = [
+    manifest => ({
+      manifest: manifest.map(entry => resources.includes(entry.url) ? {
+        url: process.env.LIBRESERVICE_CDN + entry.url,
+        revision: entry.revision,
+        size: entry.size
+      } : entry),
+      warnings: []
+    })
+  ]
+}
 
 const plugins = [
   replace({
@@ -12,13 +35,7 @@ const plugins = [
   }),
   VitePWA({
     registerType: 'autoUpdate',
-    workbox: {
-      globPatterns: [
-        '**/*.{js,css,html}',
-        'apple-touch-icon.png',
-        'crypto.wasm'
-      ]
-    },
+    workbox,
     manifest: {
       name: 'My OVPN',
       short_name: 'My OVPN',

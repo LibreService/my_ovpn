@@ -1,11 +1,9 @@
-import { expose } from '@libreservice/my-worker'
+import { loadWasm, expose } from '@libreservice/my-worker'
 
-importScripts('/crypto.js')
-
-const readyPromise = new Promise(resolve => {
-  Module.onRuntimeInitialized = () => {
+const readyPromise = loadWasm('crypto.js', {
+  url: '__LIBRESERVICE_CDN__',
+  init () {
     Module.ccall('init', 'null', [], [])
-    resolve(null)
   }
 })
 
