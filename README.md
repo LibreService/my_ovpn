@@ -18,6 +18,9 @@ https://my-ovpn.vercel.app/
 * Generate `client.ovpn`.
 * Embed `ca.crt`, `client.key`, `client.crt` and `ta.key` into `client.ovpn` (useful for Android and iOS).
 
+## Self host
+Download latest [artifact](https://github.com/LibreService/my_ovpn/releases/download/latest/my-ovpn-dist.zip) built by GitHub Actions.
+
 ## Development workflow
 My OVPN can be built on Linux and macOS.
 
