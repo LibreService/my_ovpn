@@ -5,6 +5,13 @@ Generate CA, server and client configuration for OpenVPN.
 
 https://my-ovpn.vercel.app/
 
+This is a **STATIC** website so you **DON'T** need to own a server to host it.
+
+All computation is performed in browser, thanks to Web Assembly.
+
+It's also a [PWA](https://web.dev/progressive-web-apps/), so you can install it like a native App and use it **OFFLINE**.
+
+
 ## Use case
 ### CA
 * Generate `ca.key` and `ca.crt`.

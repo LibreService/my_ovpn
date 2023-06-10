@@ -4,6 +4,7 @@ import { run } from 'vite-plugin-run'
 import vue from '@vitejs/plugin-vue'
 import replace from '@rollup/plugin-replace'
 import { VitePWA, VitePWAOptions } from 'vite-plugin-pwa'
+import { appName } from './package.json'
 
 const resources = ['crypto.js', 'crypto.wasm']
 
@@ -37,8 +38,8 @@ const plugins = [
     registerType: 'autoUpdate',
     workbox,
     manifest: {
-      name: 'My OVPN',
-      short_name: 'My OVPN',
+      name: appName,
+      short_name: appName,
       icons: [
         {
           src: 'LibreService.svg',
@@ -63,6 +64,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export default defineConfig({
+  base: '',
   build: {
     target: 'es2020'
   },

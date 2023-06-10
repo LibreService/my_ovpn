@@ -48,6 +48,7 @@ jobs:
       - name: Test
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
+          npx playwright install
           npx playwright install-deps
           pnpm run test
       - name: Release

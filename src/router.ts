@@ -11,8 +11,12 @@ const routes = [
   { path: '/client', name: 'Client', component: ClientView }
 ]
 
+function findBaseURL (entryPath: string) {
+  return entryPath.substring(0, entryPath.lastIndexOf('/'))
+}
+
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(findBaseURL(window.location.pathname)),
   routes
 })
 

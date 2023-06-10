@@ -1,6 +1,6 @@
 import { LambdaWorker } from '@libreservice/my-worker'
 
-const workerURL = '/worker.js'
+const workerURL = './worker.js'
 const worker = new LambdaWorker(workerURL)
 
 const genKey: () => Promise<number> = worker.register('genKey')

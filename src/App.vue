@@ -5,7 +5,7 @@ import { jump } from './router'
 import MyFileList from './components/MyFileList.vue'
 import MyPwa from './components/MyPwa.vue'
 import { isMobile } from './util'
-import { homepage } from '../package.json'
+import { homepage, appName } from '../package.json'
 import './main.css'
 
 const osThemeRef = useOsTheme()
@@ -21,7 +21,7 @@ const osThemeRef = useOsTheme()
             <my-layout>
               <template #header>
                 <my-header
-                  icon="/LibreService.svg"
+                  icon="./LibreService.svg"
                   :homepage="homepage"
                 />
               </template>
@@ -30,7 +30,7 @@ const osThemeRef = useOsTheme()
                   style="cursor: pointer; text-align: center; margin-top: 16px"
                   @click="jump('Main')"
                 >
-                  <n-h1>My OVPN</n-h1>
+                  <n-h1>{{ appName }}</n-h1>
                 </div>
                 <router-view v-slot="{ Component }">
                   <keep-alive>
